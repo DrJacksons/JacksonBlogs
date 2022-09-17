@@ -31,8 +31,7 @@ class Logger():
         # log format
         self.formatter = logging.Formatter('[%(levelname)s] %(module)s:%(funcName)s:%(lineno)s - %(message)s')
 
-        # fh = logging.FileHandler(self.logname, 'a', encoding='utf-8')
-        fh = handlers.RotatingFileHandler(filename=self.logname, maxBytes=1024*1024*50,backupCount=5)
+        fh = handlers.RotatingFileHandler(filename=self.logname, encoding="utf-8", maxBytes=1024*1024*50, backupCount=5)
 
         fh.setLevel(logging.INFO)
         fh.setFormatter(self.formatter)

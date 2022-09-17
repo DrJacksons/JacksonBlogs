@@ -39,7 +39,7 @@ def register():
         username = request.form.get('username').strip()
         password = request.form.get('password').strip()
         ecode = request.form.get('ecode').strip()
-        Logger.info("正在注册新用户...")
+        Logger().info("正在注册新用户...")
         # 校验邮箱验证码是否正确
         if ecode != session.get('ecode'):
             return "ecode-error"
@@ -55,7 +55,7 @@ def register():
             # 密码用md5加密输出
             password = hashlib.md5(password.encode()).hexdigest()
             result = Users().do_reg(username,password)
-            Logger.info("注册完成！")
+            Logger().info("注册完成！")
             # 设置session
             session['islogin'] = 'true'
             session['username'] = username
@@ -93,7 +93,7 @@ def login():
             # 更新积分明细表
             Credit().insert_detail(type='用户登录',target='0',credit=1)
             user.update_credit(1)
-            Logger.info("{}完成登录.".format(result[0].nickname))
+            Logger().info("{}完成登录.".format(result[0].nickname))
             return 'login-pass'
         else:
             return 'login-fail'
@@ -101,6 +101,6 @@ def login():
 @user.route('/logout',methods=['GET'])
 def logout():
     # 清空session
-    Logger.info("{}已退出.".format(session['nickname']))
+    Logger().info("{}已退出.".format(session['nickname']))
     session.clear()
     return redirect('/')

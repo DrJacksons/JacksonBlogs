@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify
 from module.article import Article
-from module.users import Users
 import time
 import os
 import math
@@ -11,10 +10,9 @@ index = Blueprint('index', __name__)
 
 @index.route('/')
 def home():
-    # 数据库文章总数
+    # choose 5 articles to show in the home page
     article = Article()
     result = article.find_limit_with_users(0,5)
-    # result = article.find_all()
     total = math.ceil(article.get_total_count() / 5)
     return render_template('index.html',result=result,total=total,page=0)
 

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1,
           shrink-to-fit=no">
     <link rel="stylesheet" href="../static/css/bootstrap.css" type="text/css"/>
-    <link rel="stylesheet" href="../static/css/woniunote.css" type="text/css"/>
+    <link rel="stylesheet" href="../static/css/note.css" type="text/css"/>
     <link href="../static/icon/font/css/open-iconic-bootstrap.css" rel="stylesheet">
     <link rel="icon" href="../static/icon/ico/block.ico" type="image/x-icon">
     <script type="text/javascript" src="../static/js/jquery-3.4.1.min.js"></script>
@@ -62,7 +62,7 @@
                     {% if session.get('islogin') == 'true' %}
                     <a class="nav-item nav-link" href="#">欢迎你：{{session.get('nickname')}}</a>
                     &nbsp;&nbsp;&nbsp;
-                    <ul class="one">
+                    <ul class="one" style="list-style: none">
                         <li class="first"><a class="nav-item nav-link" href="#">用户中心</a></li>
                         <li class="operate"><a class="nav-item nav-link" href="/prepost">写文章</a> </li>
                         <li class="operate"><a class="nav-item nav-link" href="#">我的主页</a> </li>
