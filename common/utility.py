@@ -1,4 +1,6 @@
-import random,string
+import random, string
+import numpy as np
+import pandas as pd
 import re
 import requests
 import time
@@ -124,7 +126,7 @@ def generate_thumb(url_list):
         if url.startswith('/static/upload/'):
             filename = url.split('/')[-1]
             # 找到本地图片后对其进行压缩处理，设置缩略图宽度为400像素即可
-            compress_image('./static/upload/' + filename, './static/thumb/'+filename, 400)
+            compress_image('./static/upload/' + filename, './static/thumb/' + filename, 400)
             return filename
 
     # 如果在内容中没有找到本地图片，则先将URL图片下载到本地再处理，直接将第一张图片作为缩略图，并生成基于时间戳的标准文件名
@@ -132,7 +134,78 @@ def generate_thumb(url_list):
     filename = url.split('/')[-1]
     suffix = filename.split('.')[-1]  # 获取后缀
     thumbname = time.strftime('%Y%m%d_%H%M%S.' + suffix)
-    download_image(url, './static/download/'+thumbname)
-    compress_image('./static/upload/' + thumbname, './static/thumb/'+thumbname, 400)
+    download_image(url, './static/download/' + thumbname)
+    compress_image('./static/upload/' + thumbname, './static/thumb/' + thumbname, 400)
 
     return thumbname
+
+
+# 对传入的csv文件进行清洗分析
+def data_process(path):
+    # 获取文件数据
+    df = pd.read_csv(path, index_col=0)
+
+    # 数据清洗
+    # 重命名“数”列为“页数”
+    df = df.rename(columns={'数': '页数'})
+    # 重置索引
+    df.reset_index(drop=True, inplace=True)
+    df.replace("None", np.nan, inplace=True)
+    # 去除ISBM列
+    del df['ISBM']
+    # 去除指定列含有空值的行
+    df.dropna(axis=0, subset=['作者', '出版社', '出版时间', '页数', '价格', '评分', '评论数量'],
+              how='any', inplace=True)
+    # 重置索引
+    df.reset_index(drop=True, inplace=True)
+    # 确认是否还有空值
+    # print(df.isna().sum())
+
+    '''
+    从数据集中可以发现出版时间的数据格式多样，
+    有1999,2012/12,1923-4,2019年六月，
+    因此需要提取出其年份
+    '''
+    # 为了便于统计，通过正则提取出版时间的年份
+    df["出版时间"] = df["出版时间"].str.replace(" ", "")
+    for index, row in df.iterrows():
+        num = re.findall('\d+', row[3])
+        num = ''.join(num)[0:4]
+        df.iloc[index, 3] = num
+    # 将出版时间转换为整数型
+    df.drop(df[df['出版时间'].str.len() != 4].index, axis=0, inplace=True)
+    df['出版时间'] = df['出版时间'].astype(np.int32)
+    # 发现出版时间超出实际时间的数据，将其清除
+    df.drop(df[df['出版时间'] > 2022].index, inplace=True)
+
+    # 清洗页数
+    # 规范页数的格式，去除含有其他字符的数据比如'.'
+    df['页数'] = df['页数'].apply(lambda x: x.replace(',', '').replace(' ', ''))
+    df.drop(df[~(df['页数'].str.isdecimal())].index, axis=0, inplace=True)
+    df['页数'] = df['页数'].astype(np.int32)
+    df.drop((df[df['页数'] == 0]).index, inplace=True)
+
+    # 规范价格的格式，去除价格不是纯数字的数据
+    df['价格'] = df['价格'].apply(lambda x: x.replace(',', '').replace(' ', ''))
+    for r_index, row in df.iterrows():
+        if row[5].replace('.', '').isdecimal() == False:
+            df.drop(r_index, axis=0, inplace=True)
+        elif row[5][-1].isdecimal() == False:
+            df.drop(r_index, axis=0, inplace=True)
+    # 转换价格的格式
+    df['价格'] = df['价格'].astype(float)
+    # 将价格低于1元的书籍去除
+    df.drop(df[df['价格'] < 1].index, inplace=True)
+
+    df = df.sort_values(by="评论数量", ascending=False)
+    df.reset_index(drop=True, inplace=True)
+    # 对排序后的数据进行去重
+    df.drop_duplicates(subset='书名', keep='first', inplace=True)
+    df.reset_index(drop=True, inplace=True)
+
+    # 统计哪个出版社的书籍评分较高
+    press = df['出版社'].value_counts()
+    press = pd.DataFrame(press)
+    press = press.reset_index().rename(columnseries={'index': '出版集团', '出版社': '出版数量'})
+
+    return press[:10]

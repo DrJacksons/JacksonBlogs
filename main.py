@@ -46,9 +46,15 @@ if __name__ == '__main__':
     # app.register_blueprint(ueditor)
 
     from controller.user import *
+
     app.register_blueprint(user)
 
     from controller.article import *
+
     app.register_blueprint(article)
+
+    from controller.other import *
+
+    app.register_blueprint(other)
 
     app.run(debug=True)

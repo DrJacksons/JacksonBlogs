@@ -45,14 +45,14 @@ class Article(DBase):
     # 根据id查询文章  return: (Article, 'nickname')
     def find_article_by_id(self, articleid):
         row = dbsession.query(Article, Users.nickname).join(Users, Users.userid == Article.userid) \
-            .filter(Article.hide == 0, Article.drafted == 0, Article.checked == 0,
+            .filter(Article.hide == 0, Article.drafted == 0, Article.checked == 1,
                     Article.articleid == articleid).first()
         return row
 
     # 根据文章类别id 返回该类别的文章
     def find_article_by_type(self, type, start, count):
-        result = dbsession.query(Article, Users.nickname).join(Users, Users.userid==Article.userid).\
-            filter(Article.hide==0, Article.drafted==0, Article.checked==0, Article.category==type).\
+        result = dbsession.query(Article, Users.nickname).join(Users, Users.userid == Article.userid). \
+            filter(Article.hide == 0, Article.drafted == 0, Article.checked == 1, Article.category == type). \
             order_by(Article.articleid.desc()).limit(count).offset(start).all()
         return result
 

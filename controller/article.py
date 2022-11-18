@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, abort, session, request
 from common.utility import parse_image_url, generate_thumb
 from module.article import Article
 from module.users import Users
+from logger import Logger
 
 article = Blueprint("article", __name__)
 
@@ -47,6 +48,7 @@ def add_article():
                 id = Article().insert_article(userid=userid,type=type,headline=headline,content=content,thumbnail=thumbname,credit=credit,drafted=drafted,checked=checked)
                 return str(id)
             except Exception as e:
+                Logger().error(e)
                 return 'post-fail'
         # 如果角色不是作者，则只能投稿，不能正式发布
         elif checked == 1:

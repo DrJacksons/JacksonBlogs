@@ -23,8 +23,8 @@
 
             <div class="col-12 article-nav">
                 <div>版权所有，转载本站文章请注明出处：Jackson's Blog</div>
-                <div><a href="#">上一篇：Python中利用装饰器实现复杂函数功能</a></div>
-                <div><a href="#">下一篇：Python中的多线程在测试和开发中的应用</a></div>
+                <div><a href="/article/{{ article.articleid-1 }}">上一篇</a></div>
+                <div><a href="/article/{{ article.articleid+1 }}">下一篇</a></div>
             </div>
 
             <!-- 文章评论 -->
@@ -47,9 +47,14 @@
                 </div>
                 <div class="col-12 row">
                     <div class="col-12" style="text-align: right">
-                        <button class="btn btn-primary">发表评论</button>
+                        <button class="btn btn-primary" onclick="doPost()">发表评论</button>
                     </div>
                 </div>
             </div>
         </div>
+<script>
+    function doPost() {
+        console.alert("该功能还没写好")
+    }
+</script>
 {% endblock %}

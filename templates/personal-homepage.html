@@ -1,0 +1,20 @@
+{%  extends 'base.html' %}
+{% block content%}
+<div class="card">
+    <img src="../static/img/homepage.jpg" class="card-img-top" alt="用户默认显示图片">
+    <div class="card-body">
+        <h5 class="card-title">昵称：{{session.get('nickname')}}</h5>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
+            content.</p>
+    </div>
+    <!--        <ul class="list-group list-group-flush">-->
+    <!--            <li class="list-group-item">An item</li>-->
+    <!--            <li class="list-group-item">A second item</li>-->
+    <!--            <li class="list-group-item">A third item</li>-->
+    <!--        </ul>-->
+    <div class="card-body">
+        <a href="#" class="card-link">编辑个人资料</a>
+        <a href="/data" class="card-link">数据清洗分析demo</a>
+    </div>
+</div>
+{% endblock %}

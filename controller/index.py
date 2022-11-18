@@ -8,13 +8,20 @@ from common.utility import compress_image
 
 index = Blueprint('index', __name__)
 
+
 @index.route('/')
 def home():
     # choose 5 articles to show in the home page
     article = Article()
-    result = article.find_limit_with_users(0,5)
+    result = article.find_limit_with_users(0, 5)
     total = math.ceil(article.get_total_count() / 5)
-    return render_template('index.html',result=result,total=total,page=0)
+    return render_template('index.html', result=result, total=total, page=0)
+
+
+@index.route('/user')
+def user_homepage():
+    return render_template('personal-homepage.html')
+
 
 @index.route('/page/<int:page>')
 def paginate(page):
